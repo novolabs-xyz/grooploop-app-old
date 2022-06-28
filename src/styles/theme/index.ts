@@ -6,25 +6,32 @@ import { fonts } from './fonts'
 let theme = createTheme({
    palette: {
       primary: {
-         main: colors.primaryColor,
+         main: colors.primaryMainColor,
+         light: colors.primaryLightColor,
+         dark: colors.primaryDarkColor,
+      },
+      secondary: {
+         main: colors.secondaryMainColor,
+         light: colors.secondaryLightColor,
+         dark: colors.secondaryDarkColor,
       },
    },
 
    typography: {
-      h1: { fontFamily: fonts.titleFont, fontWeight: 800, fontSize: '34px' },
-      h2: { fontFamily: fonts.titleFont, fontWeight: 700, fontSize: '30px' },
-      h3: { fontFamily: fonts.titleFont, fontWeight: 700, fontSize: '26px' },
-      h4: { fontFamily: fonts.titleFont, fontWeight: 700, fontSize: '22px' },
-      h5: { fontFamily: fonts.titleFont, fontWeight: 700, fontSize: '20px' },
-      h6: { fontFamily: fonts.titleFont, fontWeight: 700, fontSize: '16px' },
+      h1: { fontFamily: fonts.titleFont, fontWeight: 800, fontSize: '40px' },
+      h2: { fontFamily: fonts.titleFont, fontWeight: 700, fontSize: '32px' },
+      h3: { fontFamily: fonts.titleFont, fontWeight: 600, fontSize: '28px' },
+      h4: { fontFamily: fonts.titleFont, fontWeight: 600, fontSize: '24px' },
+      h5: { fontFamily: fonts.titleFont, fontWeight: 600, fontSize: '22px' },
+      h6: { fontFamily: fonts.titleFont, fontWeight: 600, fontSize: '18px' },
       subtitle1: {
          fontFamily: fonts.titleFont,
-         fontWeight: 600,
+         fontWeight: 700,
          fontSize: '18px',
       },
       subtitle2: {
          fontFamily: fonts.titleFont,
-         fontWeight: 600,
+         fontWeight: 700,
          fontSize: '16px',
       },
       body1: {

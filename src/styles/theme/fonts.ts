@@ -1,4 +1,4 @@
 export const fonts = {
-   titleFont: "'Poppins', sans-serif",
-   paragraphFont: "'Open Sans', sans-serif",
+   titleFont: "'Gotham', sans-serif",
+   paragraphFont: "'Rubik', sans-serif",
 }
