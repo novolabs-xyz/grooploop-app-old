@@ -23,6 +23,8 @@ let firebaseApp
 
 if (!getApps().length) {
    firebaseApp = initializeApp(firebaseConfig)
+} else {
+   firebaseApp = getApps()[0]
 }
 export const app = firebaseApp
 const auth = getAuth(app)
@@ -31,8 +33,11 @@ const googleProvider = new GoogleAuthProvider()
 
 const signInWithGoogle = async () => {
    try {
-      await signInWithPopup(auth, googleProvider)
-      return { ok: true, error: { status: false, message: '' } }
+      const result = await signInWithPopup(auth, googleProvider)
+      const credential = GoogleAuthProvider.credentialFromResult(result)
+      const token = credential?.accessToken
+      const user = result.user
+      return { token, user }
    } catch (err: any) {
       console.error(err)
       return { ok: false, error: { status: true, message: err.message } }
@@ -41,8 +46,8 @@ const signInWithGoogle = async () => {
 
 const logInWithEmailAndPassword = async (email: string, password: string) => {
    try {
-      await signInWithEmailAndPassword(auth, email, password)
-      return { ok: true, error: { status: false, message: '' } }
+      const result = await signInWithEmailAndPassword(auth, email, password)
+      return { result }
    } catch (err: any) {
       console.error(err)
       return { ok: false, error: { status: true, message: err.message } }
@@ -54,8 +59,8 @@ const registerWithEmailAndPassword = async (
    password: string
 ) => {
    try {
-      await createUserWithEmailAndPassword(auth, email, password)
-      return { ok: true, error: { status: false, message: '' } }
+      const result = await createUserWithEmailAndPassword(auth, email, password)
+      return { result }
    } catch (err: any) {
       console.error(err)
       return { ok: false, error: { status: true, message: err.message } }

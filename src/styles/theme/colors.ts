@@ -5,5 +5,9 @@ export const colors = {
    secondaryMainColor: '#99F5FF',
    secondaryLightColor: '#E5FCFF',
    secondaryDarkColor: '#4DEDFF',
-   black: '#000',
+   textPrimaryColor: '#303030',
+   textSecondaryColor: '#555555',
+   textDisabledColor: '#AEAEAE',
+   successMainColor: '#4BB543',
+   errorMainColor: '#B54343',
 }
