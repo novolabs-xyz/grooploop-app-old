@@ -39,7 +39,7 @@ const SignUpPage: NextPage = () => {
       event.preventDefault()
       const { email } = userToRegister
       const { error } = await registerWithEmailAndPassword(email, password.text)
-      if (error.status) {
+      if (error?.status) {
          setErrorSignin(error.message)
       }
    }
