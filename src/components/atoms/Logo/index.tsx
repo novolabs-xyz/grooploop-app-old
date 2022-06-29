@@ -7,9 +7,9 @@ export const Brand = () => {
          sx={{
             display: 'flex',
             width: '50%',
-            height: 65,
             alignItems: 'center',
             justifyContent: 'space-between',
+            padding: '1.5rem 0',
          }}
       >
          <Logo width="40px" height="40px" />
