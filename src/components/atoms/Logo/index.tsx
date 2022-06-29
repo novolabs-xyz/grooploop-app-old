@@ -6,7 +6,7 @@ export const Brand = () => {
       <Box
          sx={{
             display: 'flex',
-            width: 195,
+            width: '50%',
             height: 65,
             alignItems: 'center',
             justifyContent: 'space-between',

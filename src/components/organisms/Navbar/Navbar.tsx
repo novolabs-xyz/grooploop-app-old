@@ -1,12 +1,19 @@
-import { LogOutBtn } from '@components/molecules/LogoutBtn/LogoutBtn'
+import { LogOutBtn } from '@components/atoms/LogoutBtn/LogoutBtn'
 import { AuthContext } from '@context/AuthContext'
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
 import { AppBar, Box, Button, IconButton, Typography } from '@mui/material'
 import Link from 'next/link'
-import { useContext } from 'react'
+import { useRouter } from 'next/router'
+import { FC, useContext } from 'react'
 
-export const Navbar = () => {
+interface INavbar {
+   title: string
+   arrowBack?: boolean
+}
+export const Navbar: FC<INavbar> = (props) => {
+   const { title, arrowBack } = props
    const { currentUser } = useContext(AuthContext)
+   const router = useRouter()
 
    return (
       <AppBar
@@ -19,14 +26,16 @@ export const Navbar = () => {
             boxShadow: '0px 1px 8px  rgba(0, 0, 0, 0.05)',
             backgroundColor: '#fff',
          }}
-         position="fixed"
+         position="relative"
       >
-         <Box sx={{ position: 'absolute', left: 20 }}>
-            <IconButton>
-               <ArrowBackIosIcon />
-            </IconButton>
-         </Box>
-         <Typography variant="h6">Ingresar a la app</Typography>
+         {arrowBack && (
+            <Box sx={{ position: 'absolute', left: 20 }}>
+               <IconButton onClick={() => router.back()}>
+                  <ArrowBackIosIcon />
+               </IconButton>
+            </Box>
+         )}
+         <Typography variant="h6">{title}</Typography>
 
          {currentUser && (
             <>
