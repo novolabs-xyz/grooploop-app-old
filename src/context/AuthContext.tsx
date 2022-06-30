@@ -19,7 +19,7 @@ export const AuthProvider: FC = ({ children }) => {
 
    useEffect(() => {
       const unsuscribe = onAuthStateChanged(auth, (user) => {
-         if (user) {
+         if (user && user.emailVerified) {
             const formattedUser = {
                id: user.uid,
                providerId: user.providerData[0].providerId,

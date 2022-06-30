@@ -17,7 +17,8 @@ import { GradientBtn } from 'components/GradientBtn/index'
 import GuestRoute from 'components/organisms/GuestRoute/GuestRoute'
 import { Navbar } from 'components/organisms/Navbar/Navbar'
 import { NextPage } from 'next'
-import { useState } from 'react'
+import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
 
 const SignInWithPassPage: NextPage = () => {
    const [userToRegister, setUserToRegister] = useState({
@@ -29,16 +30,36 @@ const SignInWithPassPage: NextPage = () => {
       text: '',
       hasError: true,
    })
+   const [rePassword, setRePassword] = useState({
+      text: '',
+      hasError: true,
+   })
+   const [terms, setTerms] = useState(false)
+   const [passwordMatch, setPasswordMatch] = useState(false)
+
    const [errorSignin, setErrorSignin] = useState('')
+
+   const router = useRouter()
 
    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault()
       const { email } = userToRegister
-      const { error } = await registerWithEmailAndPassword(email, password.text)
-      if (error?.status) {
-         setErrorSignin(error.message)
+      const result = await registerWithEmailAndPassword(email, password.text)
+      if (result.error?.status) {
+         setErrorSignin(result.error.message)
+      } else {
+         setErrorSignin('')
+         router.push('/verify-account')
       }
    }
+
+   useEffect(() => {
+      if (password.text === rePassword.text) {
+         setPasswordMatch(true)
+      } else {
+         setPasswordMatch(false)
+      }
+   }, [password.text, rePassword.text])
 
    return (
       <GuestRoute>
@@ -94,17 +115,20 @@ const SignInWithPassPage: NextPage = () => {
                      </Grid>
                      <Grid item xs={12}>
                         <PasswordInput
-                           hasError={password.hasError}
+                           hasError={rePassword.hasError}
                            setHasError={(hasError: boolean) =>
-                              setPassword((password) => ({
+                              setRePassword((password) => ({
                                  ...password,
                                  hasError,
                               }))
                            }
                            errorMessage="El campo es erroneo"
-                           password={password.text}
+                           password={rePassword.text}
                            setPassword={(text: string) =>
-                              setPassword((password) => ({ ...password, text }))
+                              setRePassword((password) => ({
+                                 ...password,
+                                 text,
+                              }))
                            }
                         />
                         <Box sx={{ py: 1 }} />
@@ -117,18 +141,19 @@ const SignInWithPassPage: NextPage = () => {
                         <br />
                         <FormGroup>
                            <FormControlLabel
-                              control={<Checkbox defaultChecked />}
+                              control={<Checkbox checked={terms} />}
                               label="He leído y acepto los términos y condiciones"
+                              onChange={(event, checked) => setTerms(checked)}
                            />
                         </FormGroup>
                      </Grid>
                   </Grid>
                   <GradientBtn
-                     onClick={() => {
-                        console.log('submit')
-                     }}
+                     type="submit"
                      fullWidth
-                     disabled={userToRegister.email === '' || password.hasError}
+                     disabled={
+                        userToRegister.email === '' || !terms || !passwordMatch
+                     }
                      size="large"
                   >
                      crear cuenta

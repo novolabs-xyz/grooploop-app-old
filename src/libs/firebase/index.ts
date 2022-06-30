@@ -3,6 +3,7 @@ import {
    createUserWithEmailAndPassword,
    getAuth,
    GoogleAuthProvider,
+   sendEmailVerification,
    sendPasswordResetEmail,
    signInWithEmailAndPassword,
    signInWithPopup,
@@ -59,8 +60,15 @@ const registerWithEmailAndPassword = async (
    password: string
 ) => {
    try {
-      const result = await createUserWithEmailAndPassword(auth, email, password)
-      return { result }
+      const userCredentials = await createUserWithEmailAndPassword(
+         auth,
+         email,
+         password
+      )
+      await sendEmailVerification(userCredentials.user, {
+         url: 'http://localhost:3000',
+      })
+      return { userCredentials }
    } catch (err: any) {
       console.error(err)
       return { ok: false, error: { status: true, message: err.message } }
@@ -69,8 +77,9 @@ const registerWithEmailAndPassword = async (
 
 const sendPasswordReset = async (email: string) => {
    try {
-      await sendPasswordResetEmail(auth, email)
-      alert('Password reset link sent!')
+      await sendPasswordResetEmail(auth, email, {
+         url: 'http://localhost:3000',
+      })
       return { ok: true, error: { status: false, message: '' } }
    } catch (err: any) {
       console.error(err)

@@ -4,7 +4,7 @@ import { NextPage } from 'next'
 
 const SignInPage: NextPage = () => {
    return (
-      <Container component="main" maxWidth="xs">
+      <Container component="main">
          <Navbar title="Ingresa a la app" arrowBack />
          <Box
             sx={{

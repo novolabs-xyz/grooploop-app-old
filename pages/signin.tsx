@@ -41,7 +41,7 @@ const SignInPage: NextPage = () => {
                </Box>
                <Divisor />
                <Box sx={{ margin: '1.5rem' }}>
-                  <LinkBtn href="/signup" color="inherit">
+                  <LinkBtn href="/signin-wp" color="inherit">
                      <Typography variant="button">
                         continuar con correo electrónico
                      </Typography>
