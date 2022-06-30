@@ -8,7 +8,7 @@ const LoopsPage: NextPage = () => {
       <PrivateRoute>
          <Navbar title="Ingresa a la app" arrowBack />
          <Container component="main" maxWidth="xs">
-            List of loops
+            Lista de planes para suscriptores
          </Container>
       </PrivateRoute>
    )

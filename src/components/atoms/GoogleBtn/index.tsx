@@ -12,7 +12,7 @@ const GoogleBtn = () => {
          const result = await signInWithGoogle()
          console.log(result)
          if (result.user) {
-            router.replace('/loops')
+            router.replace('/plans')
          }
       } catch (error) {
          console.log('error')

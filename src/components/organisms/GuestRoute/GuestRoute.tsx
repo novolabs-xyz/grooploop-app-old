@@ -6,17 +6,17 @@ interface IProps {
    children: React.ReactNode
    redirectTo?: string
 }
-const PrivateRoute: FC<IProps> = (props) => {
+const GuestRoute: FC<IProps> = (props) => {
    const { children, redirectTo } = props
    const { currentUser } = useContext(AuthContext)
    const router = useRouter()
 
    if (currentUser) {
-      return <>{children}</>
-   } else {
-      router.replace(redirectTo ?? '/signin')
+      router.replace(redirectTo ?? '/plans')
       return <></>
+   } else {
+      return <>{children}</>
    }
 }
 
-export default PrivateRoute
+export default GuestRoute

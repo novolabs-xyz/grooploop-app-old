@@ -96,10 +96,18 @@ let theme = createTheme({
          color: colors.textPrimaryColor,
       },
    },
-
-   // overrides: {
-   //     Put overrides here...
-   // },
+   components: {
+      // Name of the component
+      MuiOutlinedInput: {
+         styleOverrides: {
+            // Name of the slot
+            root: {
+               // Some CSS
+               borderRadius: 8,
+            },
+         },
+      },
+   },
 })
 
 theme = responsiveFontSizes(theme)

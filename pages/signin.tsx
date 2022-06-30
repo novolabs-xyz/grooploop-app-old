@@ -6,25 +6,13 @@ import Container from '@mui/material/Container'
 import { Divisor } from 'components/atoms/Divisor'
 import GoogleBtn from 'components/atoms/GoogleBtn'
 import { TitleAndSubtitle } from 'components/atoms/TitleAndSubtitle'
+import GuestRoute from 'components/organisms/GuestRoute/GuestRoute'
 import { Navbar } from 'components/organisms/Navbar/Navbar'
-import { AuthContext } from 'context/AuthContext'
 import type { NextPage } from 'next'
-import { useRouter } from 'next/router'
-import { useContext, useEffect } from 'react'
 
 const SignInPage: NextPage = () => {
-   const { currentUser } = useContext(AuthContext)
-   const router = useRouter()
-
-   useEffect(() => {
-      if (currentUser) {
-         router.replace('/loops')
-      }
-   }, [currentUser])
-
-   // hacer un authRoute component
    return (
-      <>
+      <GuestRoute>
          <Navbar title="Ingresa a la app" arrowBack />
          <Container disableGutters>
             <Box
@@ -61,7 +49,7 @@ const SignInPage: NextPage = () => {
                </Box>
             </Box>
          </Container>
-      </>
+      </GuestRoute>
    )
 }
 

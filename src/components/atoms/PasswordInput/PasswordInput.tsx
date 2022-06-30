@@ -51,7 +51,6 @@ const PasswordInput = ({
       <>
          <TextField
             variant="outlined"
-            margin="normal"
             required
             fullWidth
             error={showError}

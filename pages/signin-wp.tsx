@@ -1,15 +1,6 @@
 import PasswordInput from '@components/atoms/PasswordInput/PasswordInput'
 import { registerWithEmailAndPassword } from '@libs/firebase'
-import {
-   Box,
-   Checkbox,
-   Container,
-   FormControlLabel,
-   FormGroup,
-   Grid,
-   TextField,
-   Typography,
-} from '@mui/material'
+import { Box, Container, Grid, TextField, Typography } from '@mui/material'
 import LinkBtn from 'components/atoms/LinkBtn'
 import { Brand } from 'components/atoms/Logo'
 import { TitleAndSubtitle } from 'components/atoms/TitleAndSubtitle'
@@ -17,6 +8,7 @@ import { GradientBtn } from 'components/GradientBtn/index'
 import GuestRoute from 'components/organisms/GuestRoute/GuestRoute'
 import { Navbar } from 'components/organisms/Navbar/Navbar'
 import { NextPage } from 'next'
+import Link from 'next/link'
 import { useState } from 'react'
 
 const SignInWithPassPage: NextPage = () => {
@@ -55,11 +47,11 @@ const SignInWithPassPage: NextPage = () => {
             >
                <Brand />
                <TitleAndSubtitle
-                  title="Crea una cuenta en grooploop"
-                  subtitle="Regístrate con tu correo electrónico y contraseña"
+                  title="Te damos la bienvenida a grooploop"
+                  subtitle="Ingresa con tu cuenta de Google"
                />
                <Box component="form" onSubmit={handleSubmit} sx={{ my: 3 }}>
-                  <Grid container spacing={3}>
+                  <Grid container spacing={2}>
                      <Grid item xs={12}>
                         <TextField
                            required
@@ -91,36 +83,12 @@ const SignInWithPassPage: NextPage = () => {
                               setPassword((password) => ({ ...password, text }))
                            }
                         />
-                     </Grid>
-                     <Grid item xs={12}>
-                        <PasswordInput
-                           hasError={password.hasError}
-                           setHasError={(hasError: boolean) =>
-                              setPassword((password) => ({
-                                 ...password,
-                                 hasError,
-                              }))
-                           }
-                           errorMessage="El campo es erroneo"
-                           password={password.text}
-                           setPassword={(text: string) =>
-                              setPassword((password) => ({ ...password, text }))
-                           }
-                        />
-                        <Box sx={{ py: 1 }} />
-
-                        <Typography variant="body2">
-                           La contraseña debe tener al menos 8 caracteres, una
-                           mayúscula y un número
-                        </Typography>
-                        <Box />
                         <br />
-                        <FormGroup>
-                           <FormControlLabel
-                              control={<Checkbox defaultChecked />}
-                              label="He leído y acepto los términos y condiciones"
-                           />
-                        </FormGroup>
+                        <br />
+
+                        <Link href="/forgot-pass">
+                           <a>¿Olvidaste la contraseña?</a>
+                        </Link>
                      </Grid>
                   </Grid>
                   <GradientBtn
@@ -131,7 +99,7 @@ const SignInWithPassPage: NextPage = () => {
                      disabled={userToRegister.email === '' || password.hasError}
                      size="large"
                   >
-                     crear cuenta
+                     ingresar
                   </GradientBtn>
                   {errorSignin && (
                      <Typography variant="body2" color="error" sx={{ mt: 2 }}>
@@ -140,12 +108,10 @@ const SignInWithPassPage: NextPage = () => {
                   )}
                </Box>
                <Typography variant="body1" gutterBottom>
-                  ¿Ya tenés cuenta?
+                  ¿Primera vez aquí?
                </Typography>
-               <LinkBtn href="/signin-wp" color="inherit" size="large">
-                  <Typography variant="button">
-                     ingresa con tu cuenta
-                  </Typography>
+               <LinkBtn href="/signup" color="inherit" size="large">
+                  <Typography variant="button">crea tu cuenta</Typography>
                </LinkBtn>
             </Box>
          </Container>
