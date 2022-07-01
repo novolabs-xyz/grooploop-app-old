@@ -1,36 +1,42 @@
-import { Brand } from '@components/atoms/Logo'
-import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
-import { TitleAndSubtitle } from 'components/atoms/TitleAndSubtitle'
+import SentLink from 'components/molecules/SentLink'
 import GuestRoute from 'components/organisms/GuestRoute/GuestRoute'
 import { Navbar } from 'components/organisms/Navbar/Navbar'
+import { getCurrentUser, sendEmailToVerifyAccount } from 'libs/firebase'
 import type { NextPage } from 'next'
+import { useSnackbar } from 'notistack'
+import { useState } from 'react'
 
-const VerifyAccountPage: NextPage = () => {
+const VerifiedAccountPage: NextPage = () => {
+   const [disabledBtn, setDisabledBtn] = useState(false)
+   const { enqueueSnackbar } = useSnackbar()
+
+   const handleSendEmail = async () => {
+      try {
+         const currentUser = await getCurrentUser()
+         if (currentUser) {
+            await sendEmailToVerifyAccount(currentUser)
+         }
+         setDisabledBtn(true)
+      } catch (error: any) {
+         console.error(error)
+         enqueueSnackbar(error.message, { variant: 'error' })
+      }
+   }
+
    return (
       <GuestRoute>
          <Navbar title="Ingresa a la app" arrowBack />
          <Container disableGutters>
-            <Box
-               sx={{
-                  my: 4,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  height: 'calc(100vh - 68px)',
-                  margin: '0 auto',
-               }}
-            >
-               <Brand />
-               <TitleAndSubtitle
-                  title="Verifica tu cuenta"
-                  subtitle="Hemos enviado a tu correo electrónico un link de verification."
-               />
-            </Box>
+            <SentLink
+               handleSendEmail={handleSendEmail}
+               title="Te hemos enviado un link a tu correo electrónico"
+               subtitle="Revisa tu bandeja de entrada o carpeta de spam. Allí encontrarás un link que te permitirá finalizar el registro."
+               disabledBtn={disabledBtn}
+            />
          </Container>
       </GuestRoute>
    )
 }
 
-export default VerifyAccountPage
+export default VerifiedAccountPage

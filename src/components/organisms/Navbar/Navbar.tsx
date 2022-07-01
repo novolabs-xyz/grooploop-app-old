@@ -1,8 +1,7 @@
 import { LogOutBtn } from '@components/atoms/LogoutBtn/LogoutBtn'
 import { AuthContext } from '@context/AuthContext'
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
-import { AppBar, Box, Button, IconButton, Typography } from '@mui/material'
-import Link from 'next/link'
+import { AppBar, Box, IconButton, Typography } from '@mui/material'
 import { useRouter } from 'next/router'
 import { FC, useContext } from 'react'
 
@@ -39,10 +38,7 @@ export const Navbar: FC<INavbar> = (props) => {
 
          {currentUser && (
             <>
-               <Link href="/user/profile">
-                  <Button component="a">profile</Button>
-               </Link>
-               <strong>{currentUser.email}</strong>
+               <small>{currentUser.email}</small>
                <LogOutBtn />
             </>
          )}

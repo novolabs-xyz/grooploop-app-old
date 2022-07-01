@@ -1,34 +1,42 @@
 import PasswordInput from '@components/atoms/PasswordInput/PasswordInput'
-import { registerWithEmailAndPassword } from '@libs/firebase'
 import { Box, Container, Grid, TextField, Typography } from '@mui/material'
+import { GradientBtn } from 'components/atoms/GradientBtn/index'
 import LinkBtn from 'components/atoms/LinkBtn'
-import { Brand } from 'components/atoms/Logo'
+import { Brand } from 'components/atoms/Brand'
 import { TitleAndSubtitle } from 'components/atoms/TitleAndSubtitle'
-import { GradientBtn } from 'components/GradientBtn/index'
 import GuestRoute from 'components/organisms/GuestRoute/GuestRoute'
 import { Navbar } from 'components/organisms/Navbar/Navbar'
+import { logInWithEmailAndPassword } from 'libs/firebase'
 import { NextPage } from 'next'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
+import { useSnackbar } from 'notistack'
 import { useState } from 'react'
+import { isEmail } from 'utils/regex'
 
 const SignInWithPassPage: NextPage = () => {
-   const [userToRegister, setUserToRegister] = useState({
+   const [userToLogin, setUserToLogin] = useState({
       email: '',
-      firstName: '',
-      lastName: '',
    })
    const [password, setPassword] = useState({
       text: '',
       hasError: true,
    })
-   const [errorSignin, setErrorSignin] = useState('')
+   const [loading, setLoading] = useState(false)
+   const router = useRouter()
+   const { enqueueSnackbar } = useSnackbar()
 
    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-      event.preventDefault()
-      const { email } = userToRegister
-      const { error } = await registerWithEmailAndPassword(email, password.text)
-      if (error?.status) {
-         setErrorSignin(error.message)
+      try {
+         setLoading(true)
+         event.preventDefault()
+         const { email } = userToLogin
+         await logInWithEmailAndPassword(email, password.text)
+         setLoading(false)
+         router.replace('/plans')
+      } catch (error: any) {
+         console.log(error)
+         enqueueSnackbar(error.message, { variant: 'error' })
       }
    }
 
@@ -39,10 +47,11 @@ const SignInWithPassPage: NextPage = () => {
          <Container component="main">
             <Box
                sx={{
-                  marginTop: 8,
                   display: 'flex',
                   flexDirection: 'column',
+                  justifyContent: 'center',
                   alignItems: 'center',
+                  height: 'calc(100vh - 68px)',
                }}
             >
                <Brand />
@@ -61,10 +70,19 @@ const SignInWithPassPage: NextPage = () => {
                            name="email"
                            autoComplete="email"
                            onChange={(event) =>
-                              setUserToRegister({
-                                 ...userToRegister,
+                              setUserToLogin({
+                                 ...userToLogin,
                                  email: event.target.value,
                               })
+                           }
+                           error={
+                              !isEmail(userToLogin.email) &&
+                              userToLogin.email.length > 0
+                           }
+                           helperText={
+                              !isEmail(userToLogin.email)
+                                 ? 'El correo electrónico no es válido'
+                                 : ''
                            }
                         />
                      </Grid>
@@ -92,20 +110,14 @@ const SignInWithPassPage: NextPage = () => {
                      </Grid>
                   </Grid>
                   <GradientBtn
-                     onClick={() => {
-                        console.log('submit')
-                     }}
+                     type="submit"
                      fullWidth
-                     disabled={userToRegister.email === '' || password.hasError}
+                     disabled={userToLogin.email === '' || password.hasError}
                      size="large"
+                     loading={loading}
                   >
                      ingresar
                   </GradientBtn>
-                  {errorSignin && (
-                     <Typography variant="body2" color="error" sx={{ mt: 2 }}>
-                        {errorSignin}
-                     </Typography>
-                  )}
                </Box>
                <Typography variant="body1" gutterBottom>
                   ¿Primera vez aquí?

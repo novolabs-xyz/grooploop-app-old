@@ -1,11 +1,13 @@
 import { signInWithGoogle } from '@libs/firebase'
 import { Button, Typography } from '@mui/material'
 import { useRouter } from 'next/router'
+import { useSnackbar } from 'notistack'
 import { useCallback } from 'react'
 import { GoogleIcon } from './GoogleIcon'
 
 const GoogleBtn = () => {
    const router = useRouter()
+   const { enqueueSnackbar } = useSnackbar()
 
    const loginHandler = useCallback(async () => {
       try {
@@ -14,9 +16,11 @@ const GoogleBtn = () => {
          if (result.user) {
             router.replace('/plans')
          }
-      } catch (error) {
-         console.log('error')
-         alert(error)
+      } catch (error: any) {
+         console.log(error)
+         enqueueSnackbar('Hubo un error inesperado. Intente nuevamente', {
+            variant: 'error',
+         })
       }
    }, [router])
    return (

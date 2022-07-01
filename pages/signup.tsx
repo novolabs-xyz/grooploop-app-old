@@ -10,15 +10,17 @@ import {
    TextField,
    Typography,
 } from '@mui/material'
+import { Brand } from 'components/atoms/Brand'
+import { GradientBtn } from 'components/atoms/GradientBtn/index'
 import LinkBtn from 'components/atoms/LinkBtn'
-import { Brand } from 'components/atoms/Logo'
 import { TitleAndSubtitle } from 'components/atoms/TitleAndSubtitle'
-import { GradientBtn } from 'components/GradientBtn/index'
 import GuestRoute from 'components/organisms/GuestRoute/GuestRoute'
 import { Navbar } from 'components/organisms/Navbar/Navbar'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
+import { useSnackbar } from 'notistack'
 import { useEffect, useState } from 'react'
+import { isEmail } from 'utils/regex'
 
 const SignInWithPassPage: NextPage = () => {
    const [userToRegister, setUserToRegister] = useState({
@@ -36,20 +38,22 @@ const SignInWithPassPage: NextPage = () => {
    })
    const [terms, setTerms] = useState(false)
    const [passwordMatch, setPasswordMatch] = useState(false)
-
-   const [errorSignin, setErrorSignin] = useState('')
+   const [loading, setLoading] = useState(false)
+   const { enqueueSnackbar } = useSnackbar()
 
    const router = useRouter()
 
    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-      event.preventDefault()
-      const { email } = userToRegister
-      const result = await registerWithEmailAndPassword(email, password.text)
-      if (result.error?.status) {
-         setErrorSignin(result.error.message)
-      } else {
-         setErrorSignin('')
+      try {
+         setLoading(true)
+         event.preventDefault()
+         const { email } = userToRegister
+         await registerWithEmailAndPassword(email, password.text)
+         setLoading(false)
          router.push('/verify-account')
+      } catch (error: any) {
+         console.log(error)
+         enqueueSnackbar(error.message, { variant: 'error' })
       }
    }
 
@@ -68,10 +72,11 @@ const SignInWithPassPage: NextPage = () => {
          <Container component="main">
             <Box
                sx={{
-                  marginTop: 8,
                   display: 'flex',
                   flexDirection: 'column',
+                  justifyContent: 'center',
                   alignItems: 'center',
+                  height: 'calc(100vh - 68px)',
                }}
             >
                <Brand />
@@ -79,8 +84,8 @@ const SignInWithPassPage: NextPage = () => {
                   title="Crea una cuenta en grooploop"
                   subtitle="Regístrate con tu correo electrónico y contraseña"
                />
-               <Box component="form" onSubmit={handleSubmit} sx={{ my: 3 }}>
-                  <Grid container spacing={3}>
+               <Box component="form" onSubmit={handleSubmit} sx={{ my: 2 }}>
+                  <Grid container spacing={2}>
                      <Grid item xs={12}>
                         <TextField
                            required
@@ -95,18 +100,35 @@ const SignInWithPassPage: NextPage = () => {
                                  email: event.target.value,
                               })
                            }
+                           error={
+                              !isEmail(userToRegister.email) &&
+                              userToRegister.email.length > 0
+                           }
+                           helperText={
+                              !isEmail(userToRegister.email)
+                                 ? 'El correo electrónico no es válido'
+                                 : ''
+                           }
                         />
                      </Grid>
                      <Grid item xs={12}>
                         <PasswordInput
-                           hasError={password.hasError}
+                           hasError={
+                              password.hasError ||
+                              !passwordMatch ||
+                              (rePassword.text.length > 0 &&
+                                 rePassword.hasError &&
+                                 password.text.length > 0)
+                           }
                            setHasError={(hasError: boolean) =>
                               setPassword((password) => ({
                                  ...password,
                                  hasError,
                               }))
                            }
-                           errorMessage="El campo es erroneo"
+                           errorMessage={
+                              !passwordMatch ? '' : 'El campo es erroneo'
+                           }
                            password={password.text}
                            setPassword={(text: string) =>
                               setPassword((password) => ({ ...password, text }))
@@ -115,14 +137,22 @@ const SignInWithPassPage: NextPage = () => {
                      </Grid>
                      <Grid item xs={12}>
                         <PasswordInput
-                           hasError={rePassword.hasError}
+                           hasError={
+                              rePassword.hasError ||
+                              !passwordMatch ||
+                              (!passwordMatch &&
+                                 password.text.length > 0 &&
+                                 rePassword.text.length > 0)
+                           }
                            setHasError={(hasError: boolean) =>
                               setRePassword((password) => ({
                                  ...password,
                                  hasError,
                               }))
                            }
-                           errorMessage="El campo es erroneo"
+                           errorMessage={
+                              !passwordMatch ? '' : 'El campo es erroneo'
+                           }
                            password={rePassword.text}
                            setPassword={(text: string) =>
                               setRePassword((password) => ({
@@ -131,8 +161,16 @@ const SignInWithPassPage: NextPage = () => {
                               }))
                            }
                         />
-                        <Box sx={{ py: 1 }} />
-
+                        <Box sx={{ py: 0.5 }} />
+                        {!passwordMatch && (
+                           <>
+                              <Typography variant="caption" color="error">
+                                 Las contraseñas ingresadas no coinciden
+                              </Typography>
+                              <br />
+                              <br />
+                           </>
+                        )}
                         <Typography variant="body2">
                            La contraseña debe tener al menos 8 caracteres, una
                            mayúscula y un número
@@ -155,14 +193,10 @@ const SignInWithPassPage: NextPage = () => {
                         userToRegister.email === '' || !terms || !passwordMatch
                      }
                      size="large"
+                     loading={loading}
                   >
                      crear cuenta
                   </GradientBtn>
-                  {errorSignin && (
-                     <Typography variant="body2" color="error" sx={{ mt: 2 }}>
-                        {errorSignin}
-                     </Typography>
-                  )}
                </Box>
                <Typography variant="body1" gutterBottom>
                   ¿Ya tenés cuenta?

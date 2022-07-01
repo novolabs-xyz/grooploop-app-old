@@ -1,5 +1,5 @@
 import LinkBtn from '@components/atoms/LinkBtn'
-import { Brand } from '@components/atoms/Logo'
+import { Brand } from 'components/atoms/Brand'
 import { Typography } from '@mui/material'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
@@ -17,13 +17,11 @@ const SignInPage: NextPage = () => {
          <Container disableGutters>
             <Box
                sx={{
-                  my: 4,
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'center',
                   alignItems: 'center',
                   height: 'calc(100vh - 68px)',
-                  margin: '0 auto',
                }}
             >
                <Brand />

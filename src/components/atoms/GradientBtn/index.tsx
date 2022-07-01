@@ -1,4 +1,4 @@
-import { Button } from '@mui/material'
+import Button from '@mui/lab/LoadingButton'
 import { FC, ReactNode } from 'react'
 import { colors } from 'styles/theme/colors'
 
@@ -9,10 +9,10 @@ interface IProps {
    size?: 'small' | 'medium' | 'large'
    fullWidth?: boolean
    disabled?: boolean
+   loading?: boolean
 }
 export const GradientBtn: FC<IProps> = (props) => {
    const { children, disabled, ...rest } = props
-   console.log(disabled)
 
    return (
       <Button

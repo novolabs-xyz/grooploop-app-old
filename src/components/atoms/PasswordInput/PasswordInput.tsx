@@ -1,10 +1,5 @@
 import { Visibility, VisibilityOff } from '@mui/icons-material'
-import {
-   IconButton,
-   InputAdornment,
-   TextField,
-   Typography,
-} from '@mui/material'
+import { IconButton, InputAdornment, TextField } from '@mui/material'
 import { useEffect, useState } from 'react'
 
 interface PasswordInputProps {
@@ -54,6 +49,7 @@ const PasswordInput = ({
             required
             fullWidth
             error={showError}
+            helperText={showError ? errorMessage : ''}
             label={label}
             type={showpw ? 'text' : 'password'}
             autoComplete="current-password"
@@ -75,13 +71,6 @@ const PasswordInput = ({
                ),
             }}
          />
-         {showError ? (
-            <Typography variant="body2" color="primary">
-               {errorMessage ?? 'Contraseña incorrecta'}
-            </Typography>
-         ) : (
-            <></>
-         )}
       </>
    )
 }

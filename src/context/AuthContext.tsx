@@ -27,6 +27,10 @@ export const AuthProvider: FC = ({ children }) => {
                email: user.email || '',
                photoURL: user.photoURL || '',
             }
+            // save user token in localstorage for future requests if doesn't exist
+            if (!localStorage.getItem('token')) {
+               localStorage.setItem('token', user.refreshToken)
+            }
 
             setCurrentUser(formattedUser)
          } else {
