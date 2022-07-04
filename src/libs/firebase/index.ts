@@ -3,11 +3,13 @@ import {
    createUserWithEmailAndPassword,
    getAuth,
    GoogleAuthProvider,
+   sendEmailVerification,
    sendPasswordResetEmail,
    signInWithEmailAndPassword,
    signInWithPopup,
    signOut,
 } from 'firebase/auth'
+import { createUserLocally } from 'services/user.services'
 
 const firebaseConfig = {
    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -23,6 +25,8 @@ let firebaseApp
 
 if (!getApps().length) {
    firebaseApp = initializeApp(firebaseConfig)
+} else {
+   firebaseApp = getApps()[0]
 }
 export const app = firebaseApp
 const auth = getAuth(app)
@@ -31,21 +35,29 @@ const googleProvider = new GoogleAuthProvider()
 
 const signInWithGoogle = async () => {
    try {
-      await signInWithPopup(auth, googleProvider)
-      return { ok: true, error: { status: false, message: '' } }
+      const result = await signInWithPopup(auth, googleProvider)
+      const credential = GoogleAuthProvider.credentialFromResult(result)
+      const token = credential?.accessToken
+      const user = result.user
+      if (user?.email && user?.displayName && user.photoURL)
+         await createUserLocally(
+            { email: user.email },
+            { displayName: user.displayName, avatar: user.photoURL }
+         )
+      return { token, user }
    } catch (err: any) {
       console.error(err)
-      return { ok: false, error: { status: true, message: err.message } }
+      throw new Error("Can't sign in with google")
    }
 }
 
 const logInWithEmailAndPassword = async (email: string, password: string) => {
    try {
-      await signInWithEmailAndPassword(auth, email, password)
-      return { ok: true, error: { status: false, message: '' } }
+      const result = await signInWithEmailAndPassword(auth, email, password)
+      return { result }
    } catch (err: any) {
       console.error(err)
-      return { ok: false, error: { status: true, message: err.message } }
+      throw new Error("Can't log in with email and password")
    }
 }
 
@@ -54,22 +66,29 @@ const registerWithEmailAndPassword = async (
    password: string
 ) => {
    try {
-      await createUserWithEmailAndPassword(auth, email, password)
-      return { ok: true, error: { status: false, message: '' } }
+      const { user } = await createUserWithEmailAndPassword(
+         auth,
+         email,
+         password
+      )
+      await sendEmailToVerifyAccount(user)
+      if (user) await createUserLocally({ email }, { displayName: '' })
+      return { user }
    } catch (err: any) {
       console.error(err)
-      return { ok: false, error: { status: true, message: err.message } }
+      throw new Error("Can't register with email and password")
    }
 }
 
 const sendPasswordReset = async (email: string) => {
    try {
-      await sendPasswordResetEmail(auth, email)
-      alert('Password reset link sent!')
+      await sendPasswordResetEmail(auth, email, {
+         url: process.env.NEXT_PUBLIC_APP_URL + '/email-verified',
+      })
       return { ok: true, error: { status: false, message: '' } }
    } catch (err: any) {
       console.error(err)
-      return { ok: false, error: { status: true, message: err.message } }
+      throw new Error("Can't send password reset email")
    }
 }
 
@@ -83,6 +102,29 @@ const getCurrentUserToken = async () => {
       return token
    } catch (error) {
       console.log(error)
+      return null
+   }
+}
+
+const getCurrentUser = async () => {
+   try {
+      const user = await auth.currentUser
+      return user
+   } catch (error) {
+      console.log(error)
+      return null
+   }
+}
+
+const sendEmailToVerifyAccount = async (user: any) => {
+   try {
+      await sendEmailVerification(user, {
+         url: process.env.NEXT_PUBLIC_APP_URL + '/email-verified',
+      })
+      return true
+   } catch (err: any) {
+      console.error(err)
+      throw new Error("Can't send email to verify account")
    }
 }
 
@@ -94,4 +136,6 @@ export {
    sendPasswordReset,
    logout,
    getCurrentUserToken,
+   sendEmailToVerifyAccount,
+   getCurrentUser,
 }

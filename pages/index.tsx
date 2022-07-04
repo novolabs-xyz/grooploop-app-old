@@ -1,28 +1,23 @@
-import { Brand } from '@components/atoms/Logo'
-import { Layout } from '@components/organisms/layout'
-import Box from '@mui/material/Box'
-import Container from '@mui/material/Container'
-import type { NextPage } from 'next'
+import { Box, Container } from '@mui/material'
+import { Navbar } from 'components/organisms/Navbar/Navbar'
+import { NextPage } from 'next'
 
-const HomePage: NextPage = () => {
+const SignInPage: NextPage = () => {
    return (
-      <Layout>
-         <Container>
-            <Box
-               sx={{
-                  my: 4,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  height: '100vh',
-               }}
-            >
-               <Brand />
-            </Box>
-         </Container>
-      </Layout>
+      <Container component="main">
+         <Navbar title="Ingresa a la app" arrowBack />
+         <Box
+            sx={{
+               marginTop: 8,
+               display: 'flex',
+               flexDirection: 'column',
+               alignItems: 'center',
+            }}
+         >
+            HOME
+         </Box>
+      </Container>
    )
 }
 
-export default HomePage
+export default SignInPage

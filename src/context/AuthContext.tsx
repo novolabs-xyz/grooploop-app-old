@@ -19,13 +19,17 @@ export const AuthProvider: FC = ({ children }) => {
 
    useEffect(() => {
       const unsuscribe = onAuthStateChanged(auth, (user) => {
-         if (user) {
+         if (user && user.emailVerified) {
             const formattedUser = {
                id: user.uid,
                providerId: user.providerData[0].providerId,
                displayName: user.displayName || '',
                email: user.email || '',
                photoURL: user.photoURL || '',
+            }
+            // save user token in localstorage for future requests if doesn't exist
+            if (!localStorage.getItem('token')) {
+               localStorage.setItem('token', user.refreshToken)
             }
 
             setCurrentUser(formattedUser)

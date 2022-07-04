@@ -1,23 +1,28 @@
 import PasswordInput from '@components/atoms/PasswordInput/PasswordInput'
-import { Layout } from '@components/organisms/layout'
-import { AuthContext } from '@context/AuthContext'
 import { registerWithEmailAndPassword } from '@libs/firebase'
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
 import {
-   Avatar,
    Box,
-   Button,
+   Checkbox,
    Container,
+   FormControlLabel,
+   FormGroup,
    Grid,
    TextField,
    Typography,
 } from '@mui/material'
+import { Brand } from 'components/atoms/Brand'
+import { GradientBtn } from 'components/atoms/GradientBtn/index'
+import LinkBtn from 'components/atoms/LinkBtn'
+import { TitleAndSubtitle } from 'components/atoms/TitleAndSubtitle'
+import GuestRoute from 'components/organisms/GuestRoute/GuestRoute'
+import { Navbar } from 'components/organisms/Navbar/Navbar'
 import { NextPage } from 'next'
-import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { useContext, useState } from 'react'
+import { useSnackbar } from 'notistack'
+import { useEffect, useState } from 'react'
+import { isEmail } from 'utils/regex'
 
-const SignUpPage: NextPage = () => {
+const SignInWithPassPage: NextPage = () => {
    const [userToRegister, setUserToRegister] = useState({
       email: '',
       firstName: '',
@@ -27,81 +32,66 @@ const SignUpPage: NextPage = () => {
       text: '',
       hasError: true,
    })
-   const [errorSignin, setErrorSignin] = useState('')
-   const { currentUser } = useContext(AuthContext)
+   const [rePassword, setRePassword] = useState({
+      text: '',
+      hasError: true,
+   })
+   const [terms, setTerms] = useState(false)
+   const [passwordMatch, setPasswordMatch] = useState(false)
+   const [loading, setLoading] = useState(false)
+   const { enqueueSnackbar } = useSnackbar()
+
    const router = useRouter()
 
-   if (currentUser) {
-      router.replace('/')
-      return <></>
-   }
    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-      event.preventDefault()
-      const { email } = userToRegister
-      const { error } = await registerWithEmailAndPassword(email, password.text)
-      if (error.status) {
-         setErrorSignin(error.message)
+      try {
+         setLoading(true)
+         event.preventDefault()
+         const { email } = userToRegister
+         await registerWithEmailAndPassword(email, password.text)
+         setLoading(false)
+         router.push('/verify-account')
+      } catch (error: any) {
+         console.log(error)
+         enqueueSnackbar(error.message, { variant: 'error' })
       }
    }
 
+   useEffect(() => {
+      if (password.text === rePassword.text) {
+         setPasswordMatch(true)
+      } else {
+         setPasswordMatch(false)
+      }
+   }, [password.text, rePassword.text])
+
    return (
-      <Layout>
-         <Container component="main" maxWidth="xs">
+      <GuestRoute>
+         <Navbar title="Ingresa a la app" arrowBack />
+
+         <Container component="main">
             <Box
                sx={{
-                  marginTop: 8,
                   display: 'flex',
                   flexDirection: 'column',
+                  justifyContent: 'center',
                   alignItems: 'center',
+                  height: 'calc(100vh - 68px)',
                }}
             >
-               <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                  <LockOutlinedIcon />
-               </Avatar>
-               <Typography component="h1" variant="h5">
-                  Sign up
-               </Typography>
-               <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
+               <Brand />
+               <TitleAndSubtitle
+                  title="Crea una cuenta en grooploop"
+                  subtitle="Regístrate con tu correo electrónico y contraseña"
+               />
+               <Box component="form" onSubmit={handleSubmit} sx={{ my: 2 }}>
                   <Grid container spacing={2}>
-                     <Grid item xs={12} sm={6}>
-                        <TextField
-                           autoComplete="given-name"
-                           name="firstName"
-                           required
-                           fullWidth
-                           id="firstName"
-                           label="First Name"
-                           autoFocus
-                           onChange={(event) =>
-                              setUserToRegister({
-                                 ...userToRegister,
-                                 firstName: event.target.value,
-                              })
-                           }
-                        />
-                     </Grid>
-                     <Grid item xs={12} sm={6}>
-                        <TextField
-                           required
-                           fullWidth
-                           id="lastName"
-                           label="Last Name"
-                           name="lastName"
-                           autoComplete="family-name"
-                           onChange={(event) =>
-                              setUserToRegister({
-                                 ...userToRegister,
-                                 lastName: event.target.value,
-                              })
-                           }
-                        />
-                     </Grid>
                      <Grid item xs={12}>
                         <TextField
                            required
                            fullWidth
                            id="email"
-                           label="Email Address"
+                           label="Correo electrónico"
                            name="email"
                            autoComplete="email"
                            onChange={(event) =>
@@ -110,56 +100,116 @@ const SignUpPage: NextPage = () => {
                                  email: event.target.value,
                               })
                            }
+                           error={
+                              !isEmail(userToRegister.email) &&
+                              userToRegister.email.length > 0
+                           }
+                           helperText={
+                              !isEmail(userToRegister.email)
+                                 ? 'El correo electrónico no es válido'
+                                 : ''
+                           }
                         />
                      </Grid>
                      <Grid item xs={12}>
                         <PasswordInput
-                           hasError={password.hasError}
+                           hasError={
+                              password.hasError ||
+                              !passwordMatch ||
+                              (rePassword.text.length > 0 &&
+                                 rePassword.hasError &&
+                                 password.text.length > 0)
+                           }
                            setHasError={(hasError: boolean) =>
                               setPassword((password) => ({
                                  ...password,
                                  hasError,
                               }))
                            }
-                           errorMessage="El campo es erroneo"
+                           errorMessage={
+                              !passwordMatch ? '' : 'El campo es erroneo'
+                           }
                            password={password.text}
                            setPassword={(text: string) =>
                               setPassword((password) => ({ ...password, text }))
                            }
                         />
                      </Grid>
-                  </Grid>
-                  <Button
-                     type="submit"
-                     fullWidth
-                     variant="contained"
-                     sx={{ mt: 3, mb: 2 }}
-                     disabled={
-                        userToRegister.email === '' ||
-                        userToRegister.firstName === '' ||
-                        userToRegister.lastName === '' ||
-                        password.hasError
-                     }
-                  >
-                     Sign Up
-                  </Button>
-                  {errorSignin && (
-                     <Typography variant="body2" color="error" sx={{ mt: 2 }}>
-                        {errorSignin}
-                     </Typography>
-                  )}
-                  <Grid container justifyContent="flex-end">
-                     <Grid item>
-                        <Link href="/signin">
-                           <a>Already have an account? Sign in</a>
-                        </Link>
+                     <Grid item xs={12}>
+                        <PasswordInput
+                           hasError={
+                              rePassword.hasError ||
+                              !passwordMatch ||
+                              (!passwordMatch &&
+                                 password.text.length > 0 &&
+                                 rePassword.text.length > 0)
+                           }
+                           setHasError={(hasError: boolean) =>
+                              setRePassword((password) => ({
+                                 ...password,
+                                 hasError,
+                              }))
+                           }
+                           errorMessage={
+                              !passwordMatch ? '' : 'El campo es erroneo'
+                           }
+                           password={rePassword.text}
+                           setPassword={(text: string) =>
+                              setRePassword((password) => ({
+                                 ...password,
+                                 text,
+                              }))
+                           }
+                        />
+                        <Box sx={{ py: 0.5 }} />
+                        {!passwordMatch && (
+                           <>
+                              <Typography variant="caption" color="error">
+                                 Las contraseñas ingresadas no coinciden
+                              </Typography>
+                              <br />
+                              <br />
+                           </>
+                        )}
+                        <Typography variant="body2">
+                           La contraseña debe tener al menos 8 caracteres, una
+                           mayúscula y un número
+                        </Typography>
+                        <Box />
+                        <br />
+                        <FormGroup>
+                           <FormControlLabel
+                              control={<Checkbox checked={terms} />}
+                              label="He leído y acepto los términos y condiciones"
+                              onChange={(event, checked) => setTerms(checked)}
+                           />
+                        </FormGroup>
                      </Grid>
                   </Grid>
+                  <GradientBtn
+                     type="submit"
+                     fullWidth
+                     disabled={
+                        userToRegister.email === '' || !terms || !passwordMatch
+                     }
+                     size="large"
+                     loading={loading}
+                  >
+                     crear cuenta
+                  </GradientBtn>
                </Box>
+               <Typography variant="body1" gutterBottom>
+                  ¿Ya tenés cuenta?
+               </Typography>
+               <LinkBtn href="/signin-wp" color="inherit" size="large">
+                  <Typography variant="button">
+                     ingresa con tu cuenta
+                  </Typography>
+               </LinkBtn>
             </Box>
          </Container>
-      </Layout>
+      </GuestRoute>
    )
 }
 
-export default SignUpPage
+export default SignInWithPassPage

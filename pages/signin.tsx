@@ -1,127 +1,53 @@
-import PasswordInput from '@components/atoms/PasswordInput/PasswordInput'
-import GoogleSignIn from '@components/molecules/SignIn/GoogleSignIn'
-import { Layout } from '@components/organisms/layout'
-import { AuthContext } from '@context/AuthContext'
-import { logInWithEmailAndPassword } from '@libs/firebase'
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
-import {
-   Avatar,
-   Box,
-   Button,
-   Container,
-   Grid,
-   TextField,
-   Typography,
-} from '@mui/material'
-import { NextPage } from 'next'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
-import { useContext, useState } from 'react'
+import LinkBtn from '@components/atoms/LinkBtn'
+import { Brand } from 'components/atoms/Brand'
+import { Typography } from '@mui/material'
+import Box from '@mui/material/Box'
+import Container from '@mui/material/Container'
+import { Divisor } from 'components/atoms/Divisor'
+import GoogleBtn from 'components/atoms/GoogleBtn'
+import { TitleAndSubtitle } from 'components/atoms/TitleAndSubtitle'
+import GuestRoute from 'components/organisms/GuestRoute/GuestRoute'
+import { Navbar } from 'components/organisms/Navbar/Navbar'
+import type { NextPage } from 'next'
 
 const SignInPage: NextPage = () => {
-   const { currentUser } = useContext(AuthContext)
-   const router = useRouter()
-   const [email, setEmail] = useState('')
-   const [password, setPassword] = useState({
-      text: '',
-      hasError: true,
-   })
-   const [errorSignin, setErrorSignin] = useState('')
-
-   if (currentUser) {
-      router.replace('/')
-      return <></>
-   }
-
-   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-      event.preventDefault()
-
-      const { error } = await logInWithEmailAndPassword(email, password.text)
-      if (error.status) {
-         setErrorSignin(error.message)
-      }
-   }
-
    return (
-      <Layout>
-         <Container component="main" maxWidth="xs">
+      <GuestRoute>
+         <Navbar title="Ingresa a la app" arrowBack />
+         <Container disableGutters>
             <Box
                sx={{
-                  marginTop: 8,
                   display: 'flex',
                   flexDirection: 'column',
+                  justifyContent: 'center',
                   alignItems: 'center',
+                  height: 'calc(100vh - 68px)',
                }}
             >
-               <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                  <LockOutlinedIcon />
-               </Avatar>
-               <Typography component="h1" variant="h5">
-                  Sign in
-               </Typography>
-               <Box
-                  component="form"
-                  method="post"
-                  sx={{ mt: 1 }}
-                  onSubmit={handleSubmit}
-               >
-                  <TextField
-                     margin="normal"
-                     required
-                     fullWidth
-                     id="email"
-                     label="Email Address"
-                     name="email"
-                     autoComplete="email"
-                     autoFocus
-                     onChange={(event) => {
-                        setEmail(event.target.value)
-                     }}
-                  />
+               <Brand />
+               <TitleAndSubtitle
+                  title="Te damos la bienvenida a grooploop"
+                  subtitle="Ingresa con tu cuenta de Google"
+               />
 
-                  <PasswordInput
-                     hasError={password.hasError}
-                     setHasError={(hasError: boolean) =>
-                        setPassword((password) => ({ ...password, hasError }))
-                     }
-                     errorMessage="El campo es erroneo"
-                     password={password.text}
-                     setPassword={(text: string) =>
-                        setPassword((password) => ({ ...password, text }))
-                     }
-                  />
-
-                  <Button
-                     type="submit"
-                     fullWidth
-                     variant="contained"
-                     sx={{ mt: 3, mb: 2 }}
-                     disabled={!email || password.hasError}
-                  >
-                     Sign In
-                  </Button>
-                  {errorSignin && (
-                     <Typography variant="body2" color="error" sx={{ mt: 2 }}>
-                        {errorSignin}
+               <GoogleBtn />
+               <Box sx={{ margin: '1.5rem' }}>
+                  <Typography variant="body1" align="center" gutterBottom>
+                     Al continuar con tu cuenta de Google aceptas nuestros
+                     Términos y condiciones.
+                  </Typography>
+               </Box>
+               <Divisor />
+               <Box sx={{ margin: '1.5rem' }}>
+                  <LinkBtn href="/signin-wp" color="inherit">
+                     <Typography variant="button">
+                        continuar con correo electrónico
                      </Typography>
-                  )}
-                  <Grid container>
-                     <Grid item xs>
-                        <Link href="/forgot-password">
-                           <a>Forgot password?</a>
-                        </Link>
-                     </Grid>
-                     <Grid item>
-                        <Link href="/signup">
-                           <a>{"Don't have an account? Sign Up"}</a>
-                        </Link>
-                        <GoogleSignIn />
-                     </Grid>
-                  </Grid>
+                  </LinkBtn>
                </Box>
             </Box>
          </Container>
-      </Layout>
+      </GuestRoute>
    )
 }
 

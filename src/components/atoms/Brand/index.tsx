@@ -6,10 +6,10 @@ export const Brand = () => {
       <Box
          sx={{
             display: 'flex',
-            width: 195,
-            height: 65,
+            width: '50%',
             alignItems: 'center',
             justifyContent: 'space-between',
+            padding: '1.5rem 0',
          }}
       >
          <Logo width="40px" height="40px" />

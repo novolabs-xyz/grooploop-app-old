@@ -5,6 +5,7 @@ import { CssBaseline, ThemeProvider } from '@mui/material'
 import createEmotionCache from '@styles/createEmotionCache'
 import '@styles/globals.css'
 import theme from '@styles/theme'
+import { Layout } from 'components/organisms/layout'
 import type { AppProps } from 'next/app'
 import Head from 'next/head'
 import { SnackbarProvider } from 'notistack'
@@ -38,7 +39,9 @@ const MyApp: FC<MyAppProps> = (props) => {
                <SnackbarProvider maxSnack={3}>
                   <CssBaseline />
                   <AuthProvider>
-                     <Component {...pageProps} />
+                     <Layout>
+                        <Component {...pageProps} />
+                     </Layout>
                   </AuthProvider>
                </SnackbarProvider>
             </ThemeProvider>
